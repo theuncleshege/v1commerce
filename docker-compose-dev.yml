@@ -1,0 +1,30 @@
+version: '3'
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /usr/src/app/node_modules
+      - ./api:/usr/src/app
+    # ports:
+    #  - "4000:4000"
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /usr/src/app/node_modules
+      - ./client:/usr/src/app
+    environment:
+      REACT_APP_CONTAINER: Docker
+    depends_on:
+      - api
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      - "81:80"
+    depends_on:
+      - client

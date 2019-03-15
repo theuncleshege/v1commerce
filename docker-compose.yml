@@ -1,0 +1,26 @@
+version: '3'
+services:
+  api:
+    build:
+      context: ./api
+    volumes:
+      - /usr/src/app/node_modules
+      - ./api:/usr/src/app
+    # ports:
+    #  - "4000:4000"
+  client:
+    build:
+      context: ./client
+    volumes:
+      - /usr/src/app/node_modules
+      - ./client:/usr/src/app
+    depends_on:
+      - api
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      - "81:80"
+    depends_on:
+      - client

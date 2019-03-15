@@ -1,0 +1,67 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node ./src/index.ts",
+    "debug": "node --inspect=5858 -r ts-node/register ./src/index.ts",
+    "dev": "nodemon",
+    "test": "jest --no-cache --detectOpenHandles",
+    "test:coverage": "jest --no-cache --detectOpenHandles --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/build/",
+      "/*.js",
+      "/*.json",
+      "/yarn.lock"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "html"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/build/",
+      "<rootDir>/src/index.ts",
+      "/*.js",
+      "/*.json",
+      "/yarn.lock"
+    ],
+    "preset": "ts-jest",
+    "globalTeardown": "<rootDir>/tests/teardown.js"
+  },
+  "dependencies": {
+    "apollo-server": "^2.3.1",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.4",
+    "graphql-yoga": "^1.17.0",
+    "jsonwebtoken": "^8.4.0",
+    "mkdirp": "^0.5.1",
+    "slug": "^0.9.3",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/express": "^4.16.0",
+    "@types/graphql": "^14.0.5",
+    "@types/jest": "^23.3.13",
+    "@types/jest-cli": "^23.6.0",
+    "@types/jsonwebtoken": "^8.3.0",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^10.12.18",
+    "@types/rimraf": "^2.0.2",
+    "@types/slug": "^0.9.0",
+    "@types/uuid": "^3.4.4",
+    "jest": "^23.6.0",
+    "jest-cli": "^23.6.0",
+    "nodemon": "^1.18.9",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^8.0.1",
+    "typescript": "^3.2.4"
+  }
+}

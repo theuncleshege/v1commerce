@@ -1,0 +1,12 @@
+{
+    "watch": ["./src"],
+    "ext": "ts, gql",
+    "ignore": [
+        "node_modules",
+        "./tests",
+        "*.test.ts",
+        "*.spec.ts"
+    ],
+    "exec": "node --inspect=5858 -r ts-node/register ./src/index.ts",
+    "inspect": true
+}
