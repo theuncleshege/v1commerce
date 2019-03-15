@@ -1,12 +1,12 @@
 # v1commerce
 
-This is a sample e-commerce application. It has been built with service-oriented architecture and is broken down into 3 major parts namely:
+This is a simple e-commerce application. It has been built with service-oriented architecture and is broken down into 3 major parts namely:
 
 - The Client - a `react` app which is what users see
 - The API - an `apollo-graphql engine` server which is responsible for data and images
 - The Webserver -  an `nginx` server responsible for routing requests to either the `client` or the `api` depending on the route
 
-**_Because this is a simple application, `json` files are used as the datasource as opposed to a database server..._**
+**_Because this is a simple application, `json` files are used as the datasource as opposed to a real database server such as MySQL or MongoDB..._**
 
 There are two ways of running this application locally;
 
@@ -26,15 +26,15 @@ There are two ways of running this application locally;
 
 - Clone the repository
 - Open your `terminal/command prompt/powershell` window and navigate to the `v1commerce` folder
-- Navigate into the `api` folder and run `yarn install` or `npm install`
+- Navigate further into the `api` folder and run `yarn install` or `npm install`
 - Then run `yarn start` or `npm start` to start the API server
 - Open your browser and navigate to `http://localhost:4000` to see the running GraphQL playground.(Optional)
 - Open another `terminal/command prompt/powershell` window and navigate to the `v1commerce` folder
-- Then navigate into the `client` folder and run `yarn install` or `npm install`
+- Then navigate further into the `client` folder and run `yarn install` or `npm install`
 - Then run `yarn start` or `npm start` to start the API server
 - Open your browser and navigate to `http://localhost:3000` to see the running application
 
-To run unit tests, please navigate into any of the `api` or `client` folders and run `yarn test` or `yarn test:coverage` (which generates test coverage reports).
+To run unit tests, please navigate into any of the `api` or `client` folders and run `yarn test` or `yarn test:coverage` (which generates test coverage reports). Kindly make sure that you have run `yarn install` inside the `api` and `client` folders first before trying to run unit tests.
 
 ## About the application
 
@@ -47,11 +47,13 @@ By default, one admin user and one regular user are available. Please see their 
 ### Admin User
 
 > username: admin
+
 > password: 123456
 
 ### Regular User
 
 > username: user
+
 > password: 123456
 
 Please note that this is by no means a production ready app. It was just a simple project to demonstrate mastery of GraphQL and the Apollo Engine. It can also be used as seed project for more serious projects.
