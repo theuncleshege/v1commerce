@@ -1,29 +1,67 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "skipLibCheck": true,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
+    "lib": ["es2018"],
+    "module": "commonjs",
+    "target": "es2018",
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": ".build",
+    "sourceMap": true,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "allowJs": true,
+    "removeComments": true,
+    "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "isolatedModules": false,
-    "outDir": "build",
-    "sourceMap": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ],
+      "@Controllers/*": [
+        "src/controllers/*"
+      ],
+      "@DBConnections/*": [
+        "src/databases/*"
+      ],
+      "@Entities/*": [
+        "src/entity/*"
+      ],
+      "@Middlewares/*": [
+        "src/middlewares/*"
+      ],
+      "@Functions/*": [
+        "src/functions/*"
+      ],
+      "@Repositories/*": [
+        "src/repositories/*"
+      ],
+      "@Services/*": [
+        "src/services/*"
+      ],
+      "@Shared/*": [
+        "src/shared/*"
+      ],
+      "@Tests/*": [
+        "src/__tests__/*"
+      ]
+    }
   },
+  "include": ["./**/*"],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.test.ts"
-  ],
-  "include": [
-    "src/**/*.ts"
+    "node_modules/**/*",
+    ".idea/**/*",
+    ".vscode/**/*"
   ]
 }
