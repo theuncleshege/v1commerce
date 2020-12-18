@@ -4,9 +4,10 @@ const schema = `type Product {
     slug: String!
     brand: String!
     price: Float!
+    image: String!
     summary: String!
-    createdAt: Float!
-    updatedAt: Float!
+    createdAt: String!
+    updatedAt: String!
 }
 
 type User {
@@ -41,9 +42,9 @@ type Mutation {
     signup(username: String!, password: String!, name: String!): AuthPayload
     login(username: String!, password: String!): AuthPayload
     # Create a product
-    createProduct(name: String!, brand: String!, price: Float!, summary: String!): Product!
+    createProduct(name: String!, brand: String!, price: Float!, image: String!, summary: String!): Product!
     # Update a product
-    updateProduct(id: ID!, name: String, brand: String, price: Float, summary: String): Product
+    updateProduct(id: ID!, name: String, brand: String, price: Float, image: String, summary: String): Product
     # Delete a product
     deleteProduct(id: ID!): Product
 }
