@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   api:
     build:
@@ -24,3 +24,15 @@ services:
       - "81:80"
     depends_on:
       - client
+  mysql:
+    image: mysql:5.7
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - "3307:3306"
+volumes:
+  dbdata:
+    driver: local
