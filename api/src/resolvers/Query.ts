@@ -1,33 +1,25 @@
-import { Product } from '../types';
-import { fetchData, getUserId } from '../utils';
+import ProductORMRepository from '@Repositories/Product/ProductORMRepository';
+import ProductService from '@Services/ProductService/ProductService';
+import { filterParams, GenericObject, Product } from '~/types';
+
+const productService = new ProductService(new ProductORMRepository());
 
 const Query = {
-    products: (parent: any, args: any, context: any) => {
-        const products: [Product] = fetchData('products');
-        let results = args.filter ? products.filter((product: Product) => product.name.toLowerCase().includes(args.filter.toLowerCase()) || product.summary.toLowerCase().includes(args.filter.toLowerCase())) : products;
-        if (args.orderBy) {
-            const orderBy = args.orderBy;
-            if (orderBy == "name_ASC") {
-                results = results.sort((a: Product, b: Product) => a.name > b.name ? 1 : -1);
-            } else if (orderBy == "name_DESC") {
-                results = results.sort((a: Product, b: Product) => a.name > b.name ? -1 : 1);
-            } else if (orderBy == "createdAt_ASC") {
-                results = results.sort((a: Product, b: Product) => a.createdAt - b.createdAt);
-            } else if (orderBy == "createdAt_DESC") {
-                results = results.sort((a: Product, b: Product) => b.createdAt - a.createdAt);
-            }
-        }
-        results = args.skip ? results.slice(args.skip) : results;
-        results = args.count ? results.slice(0, args.count) : results;
-
-        return results;
-    },
-    product: (parent: any, args: any, context: any) => {
-        getUserId(context);
-        const products: [Product] = fetchData('products');
-        const product = products.filter((product: Product) => product.id === args.id)[0];
-        return product;
+  products: async (_: GenericObject, args: filterParams) => {
+    return await productService.getAll(
+      args.filter,
+      args.orderBy,
+      args.skip,
+      args.count
+    );
+  },
+  product: async (_: GenericObject, args: Product) => {
+    try {
+      return await productService.getById(args.id);
+    } catch (e) {
+      throw new e();
     }
+  },
 };
 
 export default Query;

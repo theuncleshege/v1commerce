@@ -1,123 +1,115 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import slug from 'slug';
-import uuidv1 from 'uuid';
+import {
+  PRODUCT_ADDED,
+  PRODUCT_REMOVED,
+  PRODUCT_UPDATED,
+  pubsub,
+} from './Subscription';
+import UserORMRepository from '@Repositories/User/UserORMRepository';
+import ProductORMRepository from '@Repositories/Product/ProductORMRepository';
+import ProductService from '@Services/ProductService/ProductService';
+import UserService from '@Services/UserService/UserService';
+import { GenericObject, HttpContextObject, Product, User } from '~/types';
 
-import { APP_SECRET, getUserId, fetchData, saveData, deleteProductImage } from '../utils';
-import { Product, User } from '../types';
-import { pubsub, PRODUCT_ADDED, PRODUCT_UPDATED, PRODUCT_REMOVED } from './Subscription';
+const productService = new ProductService(new ProductORMRepository());
+const userService = new UserService(new UserORMRepository());
 
-slug.defaults.mode ='rfc3986';
+const signup = async (_: GenericObject, args: User) => {
+  const data = {
+    name: args.name,
+    username: args.username,
+    password: args.password,
+    admin: args.username === 'admin',
+  };
 
-const signup = async (parent: any, args: any, context: any, info: any) => {
-    const users: [User] = fetchData('users');
-    const id = uuidv1();
-    const password = await bcrypt.hash(args.password, 10);
-    const user = {
-        id,
-        name: args.name,
-        username: args.username,
-        password,
-        admin: args.username == "admin" ? true : false,
-        createdAt: Date.now()
-    };
-    const existingUsers = users.filter( (user: User) => user.username === args.username);
-    if ( existingUsers.length > 0 ) {
-        throw new Error('User already exists! Kindly use another username.');
-    }
-    users.push(user);
-    saveData('users', users);
-    const token = jwt.sign({ userId: user.id }, APP_SECRET);
+  try {
+    const { token, user } = await userService.createUser(data);
 
-    return {
-        token,
-        user,
-    }
+    return { token, user };
+  } catch (error) {
+    throw new Error('Username already exists!');
+  }
 };
-const login = async (parent: any, args: any, context: any, info: any) => {
-    const users: [User] = fetchData('users');
-    const user = users.find( (x: User) => x.username === args.username);
-    if (!user) {
-        throw new Error('No such user found');
-    }
-    const valid = await bcrypt.compare(args.password, user.password);
-    if (!valid) {
-        throw new Error('Invalid password');
-    }
-    const token = jwt.sign({ userId: user.id }, APP_SECRET);
 
-    return {
-        token,
-        user,
-    }
+const login = async (_: GenericObject, args: Partial<User>) => {
+  if (!args.username || !args.password) {
+    throw new Error('Username and Password cannot be empty!');
+  }
+
+  const { token, user } = await userService.login(args.username, args.password);
+
+  return {
+    token,
+    user,
+  };
 };
-const createProduct = (parent: any, args: any, context: any) => {
-    getUserId(context);
-    const products: [Product] = fetchData('products');
-    const id = uuidv1();
-    const productSlug = slug(args.name);
-    const product = {
-        id,
-        name: args.name,
-        slug: productSlug,
-        brand: args.brand,
-        price: args.price,
-        summary: args.summary,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-    };
 
-    const existingProducts = products.filter( (product: Product) => product.id === id || product.slug === productSlug );
-    if ( existingProducts.length > 0 ) {
-        throw new Error('Product already exists!');
-    }
-    products.push(product);
-    saveData('products', products, productSlug);
+const createProduct = async (
+  _: GenericObject,
+  args: Product,
+  context: HttpContextObject
+) => {
+  UserService.getUserId(context);
+
+  const data = {
+    name: args.name,
+    brand: args.brand,
+    price: args.price,
+    image: args.image,
+    summary: args.summary,
+  };
+
+  try {
+    const product = await productService.create(data);
+
     pubsub.publish(PRODUCT_ADDED, { productChanged: product });
+
     return product;
+  } catch (e) {
+    throw new Error('Product already exists!');
+  }
 };
-const updateProduct = (parent: any, args: any, context: any) => {
-    getUserId(context);
-    const products: [Product] = fetchData('products');
-    const productIndex = products.findIndex((x: Product) => x.id === args.id);
-    if (productIndex < 0) {
-        throw new Error('Product not found!');
-    }
-    args.slug = slug(args.name);
-    const existingProducts = products.filter( (product: Product) => product.slug === args.slug && product.id !== args.id );
-    if ( existingProducts.length > 0 ) {
-        throw new Error('Product already exists! Please choose another name');
-    }
-    if (args.slug != products[productIndex].slug) {
-        deleteProductImage(products[productIndex].slug);
-    }
-    args.updatedAt = Date.now();
-    const product = Object.assign(products[productIndex], args);
-    products.splice(productIndex, 1, product);
-    saveData('products', products, args.slug);
+
+const updateProduct = async (
+  _: GenericObject,
+  data: Product,
+  context: HttpContextObject
+) => {
+  UserService.getUserId(context);
+
+  try {
+    const product = await productService.update(data.id as string, data);
+
     pubsub.publish(PRODUCT_UPDATED, { productChanged: product });
+
     return product;
+  } catch (error) {
+    throw new error();
+  }
 };
-const deleteProduct = (parent: any, args: any, context: any) => {
-    getUserId(context);
-    const products: [Product] = fetchData('products');
-    const productIndex = products.findIndex((x: Product) => x.id === args.id);
-    if (productIndex < 0) {
-        throw new Error('Product not found!');
-    }
-    const product = products[productIndex];
-    products.splice(productIndex, 1);
-    saveData('products', products);
-    deleteProductImage(product.slug);
+
+const deleteProduct = async (
+  _: GenericObject,
+  args: Product,
+  context: HttpContextObject
+) => {
+  UserService.getUserId(context);
+
+  try {
+    const product = await productService.getById(args.id);
+    await productService.delete(product.id as string);
+
     pubsub.publish(PRODUCT_REMOVED, { productChanged: product });
+  } catch (error) {
+    throw new error();
+  }
 };
 
 const Mutation = {
-    signup,
-    login,
-    createProduct,
-    updateProduct,
-    deleteProduct
+  signup,
+  login,
+  createProduct,
+  updateProduct,
+  deleteProduct,
 };
 
 export default Mutation;
