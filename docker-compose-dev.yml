@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   api:
     build:
@@ -7,8 +7,12 @@ services:
     volumes:
       - /usr/src/app/node_modules
       - ./api:/usr/src/app
-    # ports:
-    #  - "4000:4000"
+    depends_on:
+      - mysql
+    env_file:
+      - ./api/.env
+    ports:
+      - "4000:4000"
   client:
     build:
       context: ./client
@@ -20,6 +24,8 @@ services:
       REACT_APP_CONTAINER: Docker
     depends_on:
       - api
+    ports:
+      - "3000:3000"
   nginx:
     restart: always
     build:
@@ -28,3 +34,15 @@ services:
       - "81:80"
     depends_on:
       - client
+  mysql:
+    image: mysql:5.7
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - "3307:3306"
+volumes:
+  dbdata:
+    driver: local
