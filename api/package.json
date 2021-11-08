@@ -20,7 +20,7 @@
     "test:integration": "jest tests"
   },
   "dependencies": {
-    "apollo-server": "^2.18.2",
+    "apollo-server": "^2.25.3",
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
